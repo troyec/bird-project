@@ -1,11 +1,10 @@
-import logo from './logo.svg';
 import './App.css';
-import React, { useState } from 'react';
-import { Button,  Divider, Layout} from 'antd';
+import React from 'react';
+import { Layout} from 'antd';
 import FileUploadForm from './FileUploadForm';
 
 
-const { Header, Footer, Content } = Layout;
+const { Header, Footer } = Layout;
 
 const headerStyle = {
   textAlign: 'center',
@@ -15,9 +14,17 @@ const headerStyle = {
   backgroundColor: '#4096ff',
 };
 const contentStyle = {
+  margin: '10px',
+  borderRadius: '10px',
+  // 边框颜色
+  border: '2px solid #efefef',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-around',
+  alignItems: 'stretch',
+
   textAlign: 'center',
-  minHeight: 120,
-  lineHeight: '400px',
+  minHeight: '600px',
   color: 'red',
   // backgroundColor: '#0958d9',
 };
@@ -26,31 +33,18 @@ const footerStyle = {
   color: 'red',
   // backgroundColor: '#4096ff',
 };
-const containerStyle = {
-  minHeight: '100vh' ,
-  // backgroundColor:'#4096ff'
-};
-const uploadStyle = {
-  height:'200px'
-}
 
 
 
 
 function App() {
-
   return (
     <div className="App">
-      <Layout style={{ minHeight: '100vh' }}>
-        <Header style={headerStyle}>header</Header>
-        <Divider/>
-        <Content style={contentStyle}>
-  
-          <FileUploadForm />
-        </Content>
-        <Divider/>
-        <Footer style={footerStyle}>Footer</Footer>
-      </Layout>
+      <Header style={headerStyle}>header</Header>
+      <div style={contentStyle}>
+        <FileUploadForm />
+      </div>
+      <Footer style={footerStyle}>Footer</Footer>
       
     </div>
   );

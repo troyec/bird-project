@@ -11,3 +11,65 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+audio {
+  width: 90vw;
+  background-color: #f2f2f2;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+audio::-webkit-media-controls {
+  /* Webkit浏览器（如Chrome和Safari）的播放器样式 */
+  background-color: #f2f2f2;
+  border-radius: 4px;
+}
+
+audio::-webkit-media-controls-play-button {
+  /* Webkit浏览器的播放按钮样式 */
+  background-color: #aa2020;
+  color: #fff;
+}
+
+audio::-webkit-media-controls-volume-slider {
+  /* Webkit浏览器的音量滑块样式 */
+  background-color: #333;
+}
+
+audio::-webkit-media-controls-seek-back-button,
+audio::-webkit-media-controls-seek-forward-button {
+  /* Webkit浏览器的快进/快退按钮样式 */
+  background-color: transparent;
+  color: #333;
+}
+
+audio::-webkit-media-controls-play-button::before {
+  /* Webkit浏览器的播放按钮图标 */
+  content: "\u25B6";
+  font-size: 16px;
+}
+
+audio::-webkit-media-controls-pause-button::before {
+  /* Webkit浏览器的暂停按钮图标 */
+  content: "\u2389";
+  font-size: 16px;
+}
+
+audio::-webkit-media-controls-timeline {
+  /* Webkit浏览器的进度条样式 */
+  background-color: #ddd;
+}
+
+audio::-webkit-media-controls-seek-back-button,
+audio::-webkit-media-controls-seek-forward-button {
+  /* Webkit浏览器的快进/快退按钮样式 */
+  background-color: #20117e;
+  color: #fff;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}

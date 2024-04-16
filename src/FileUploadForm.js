@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import WaveformWithLabels from './components/WaveformWithLabels';
+import './index.css';
 
 const FileUploadForm = () => {
     
   const [selectedFile, setSelectedFile] = useState(null);
+  const [result, setResult] = useState(null);
+  const [image, setImage] = useState(null);
+
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -11,7 +16,6 @@ const FileUploadForm = () => {
 
   //文件分片大小
   const chunkSize = 20 * 1024
-
 
 
   const handleSubmit = async function(event){
@@ -35,33 +39,46 @@ const FileUploadForm = () => {
         data.set('full_name', randomStr + '_' +selectedFile.name)
         data.append('file', chunk);
         console.log(selectedFile.name + '_' + index)
-        tasks.push(axios.post('/process_data', data))
+        tasks.push(axios.post('/upload', data))
       })
       await Promise.all(tasks);
-      // axios.get('/merge',{
-      //   params: {
-      //     filename: randomStr + '_' +selectedFile.name,
-      //     chunks_total: chunks.lengthß
-      //   }
-      // })
+      axios.get('/merge',{
+        params: {
+          filename: randomStr + '_' +selectedFile.name,
+          chunks_total: chunks.length
+        }
+      }).then(res=>{
+        axios.get('/process_data',{
+          params: {
+            filename: randomStr + '_' +selectedFile.name,
+            chunks_total: chunks.length
+          }
+        }).then(res=>{
+          setResult(res.data.result)
+          setImage(res.data.image)
+        })
+      }).catch(err=>{
+        console.log(err)
+      })
 
-      // const formData = new FormData();
-      // formData.append('file', selectedFile);
-      
-
-      // try {
-      //   const res = await axios.post('/process_data',formData);
-      //   console.log(res);
-      // } catch (error) {
-      //   console.error(error);
-      // }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="file" onChange={handleFileChange} />
-      <button type="submit">上传文件</button>
+    <form onSubmit={handleSubmit} className='form'>
+      <div>
+        <input type="file" onChange={handleFileChange} />
+        <button type="submit">上传文件</button>
+      </div>
+      
+      {/* 绘制base64编码的image图片 */}
+      
+        {image && <WaveformWithLabels waveformImageUrl={image} labels={result} />}
+        {/* 播放音频文件selectedFile */}
+        {selectedFile && <audio controls>
+          <source src={URL.createObjectURL(selectedFile)}  />
+        </audio>}
+      
     </form>
   );
 };
