@@ -1,18 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 import moment from 'moment';
+import Store from '../../store';
 import './index.css'
 
-const WaveformWithLabels2 = ({ imageUrl, labels, page }) => {
+// 该组件用于绘制canvas波形图
+const WaveformWithLabels2 = ({ imageUrl, page }) => {
   const canvasRef = useRef(null);
-
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
     const image = new Image();
-    // image.src = `data:image/png;base64,${waveformImageUrl}`;
     image.src = imageUrl;
-    labels = labels.slice((page-1)*3,page*3)
+    const labels = Store.labels.slice((page-1)*3,page*3)
     image.onload = () => {
         canvas.width = window.innerWidth;
         canvas.height = 400;
@@ -48,7 +48,7 @@ const WaveformWithLabels2 = ({ imageUrl, labels, page }) => {
       }
       });
     };
-  }, [imageUrl, labels]);
+  }, [imageUrl, Store.labels]);
 
     return <div className='canvas-container '>
         <canvas ref={canvasRef} />

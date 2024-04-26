@@ -1,7 +1,7 @@
 import './App.css';
 import React from 'react';
 import { Layout} from 'antd';
-import FileUploadForm from './FileUploadForm';
+import FileUploadForm from './components/FileUploadForm';
 
 
 const { Header, Footer } = Layout;
@@ -40,11 +40,11 @@ const footerStyle = {
 function App() {
   return (
     <div className="App">
-      <Header style={headerStyle}>header</Header>
+      <Header style={headerStyle}>鸟鸣检测与识别</Header>
       <div style={contentStyle}>
         <FileUploadForm />
       </div>
-      <Footer style={footerStyle}>Footer</Footer>
+      <Footer style={footerStyle}>川大声学</Footer>
       
     </div>
   );

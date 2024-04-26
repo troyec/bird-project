@@ -1,34 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { Pagination, Spin } from 'antd';
-import axios from 'axios';
 import WaveformWithLabels2 from '../WaveformWithLabels2';
+import Store from '../../store';
+import api, {baseURL} from '../../api/api';
 
 
-const duration = 3;
+// 该组件用于分页展示图片
 
-const ImageGallery = (props) => {
+const ImageGallery = ({result}) => {
   const [images, setImages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalImages, setTotalImages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [url, setUrl] = useState(null);
 
-
-
+  // 获取后端图片
   const fetchImages = async (page = 1, perPage = 1) => {
     setLoading(true);
-    await axios.get('http://192.168.1.200:5000/images',{
+    await api.get('/images',{
       params: {
-        filename: props.filename,
+        filename: Store.filename,
         page: page,
         perPage: perPage
       }}).then(res => {
         setImages(res.data.images);
         console.log('image',images[0])
         setTotalImages(res.data.total_images);
-        console.log('Pagination',totalImages)
-        // setUrl(`http://192.168.1.200:5000/download_image?filename=${images[0]}`);
-        // console.log('url',url)
 
         setLoading(false);
       }).catch(err => {
@@ -41,26 +38,26 @@ const ImageGallery = (props) => {
     fetchImages(currentPage);
   }, [currentPage]);
 
+  // 单独设置img标签的src
   useEffect(() => {
-    setUrl(`http://192.168.1.200:5000/download_image?filename=${images[0]}`);
-    console.log('url',url)
+    setUrl(`${baseURL}/download_image?filename=${images[0]}`);
   }, [images]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+  
 
   return (
     <div>
       {loading ? (
         <Spin size="large" />
-      ) : images && (
+      ) :  result && (
         <>
           {images.map((image, index) => (
-            // <img key={index} src={url} alt={`Image ${index}`} style={{ maxWidth: '100%' }} />
-            // labels
-            <WaveformWithLabels2 imageUrl={url} labels={props.labels} key={index} page={currentPage}/>
-            // <WaveformWithLabels2 imageUrl={url} labels={result.slice(index*duration,(index+1)*duration)} />
+
+            <WaveformWithLabels2 imageUrl={url}  key={index} page={currentPage}/>
+
           ))}
           <Pagination current={currentPage} total={totalImages} defaultPageSize={1} onChange={handlePageChange} />
         </>

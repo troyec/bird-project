@@ -1,28 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import Papa from 'papaparse';
-import WaveformWithLabels from './components/WaveformWithLabels';
-import ImageGallery from './components/ImageGallery';
+import React, { useState } from 'react';
+import Store from '../../store';
+import api from '../../api/api';
+import ImageGallery from '../ImageGallery';
 import './index.css';
-import { Header } from 'antd/es/layout/layout';
-import { Pagination, Spin } from 'antd';
-
-
+import { DownloadOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 
 const FileUploadForm = () => {
     
   const [selectedFile, setSelectedFile] = useState(null);
   const [result, setResult] = useState(null);
-  // const [images, setImages] = useState(null);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [totalImages, setTotalImages] = useState(0);
-  // const [loading, setLoading] = useState(false);
   const [csvfile, setCsvfile] = useState(null);
-  const [filename, setFilename] = useState(null);
-  const [randomStr, setRandomStr] = useState(null);
   const audioRef = React.createRef(null);
 
-
+// 处理点击事件
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
     if(audioRef.current){
@@ -34,7 +25,7 @@ const FileUploadForm = () => {
   //文件分片大小
   const chunkSize = 20 * 1024
 
-
+// 处理上传事件
   const handleSubmit = async function(event){
     event.preventDefault();
 
@@ -46,39 +37,41 @@ const FileUploadForm = () => {
         chunks.push(selectedFile.slice(startPos, startPos+chunkSize));
         startPos += chunkSize;
       }
-
-      const randomStr = Math.random().toString().slice(2,8)
-      setRandomStr(randomStr)
+      // 生成随机字符串，用于文件名
+      const randomString = Math.random().toString().slice(2,8)
+      // 设置全局文件名
+      Store.setFilename(randomString + '_' + selectedFile.name)
+      console.log('Store.filename',Store.filename)
+      // 文件分片上传
       const tasks = []
-      setFilename(randomStr + '_' + selectedFile.name)
-      chunks.map((chunk, index)=>{
+      chunks.forEach((chunk, index)=>{
         const data = new FormData();
-        data.set('name', randomStr + '_' + selectedFile.name + '_' + index);
+        data.set('name', Store.filename + '_' + index);
         data.set('chunks_total', chunks.length)
-        data.set('full_name', randomStr + '_' +selectedFile.name)
+        data.set('full_name', Store.filename)
         data.append('file', chunk);
-        console.log(selectedFile.name + '_' + index)
-        tasks.push(axios.post('http://192.168.1.200:5000/upload', data))
+        tasks.push(api.post('/upload', data))
       })
+      // 执行分片上传
       await Promise.all(tasks);
-      axios.get('http://192.168.1.200:5000/merge',{
+      // 调用合并接口，合并文件
+      api.get('/merge',{
         params: {
-          filename: randomStr + '_' +selectedFile.name,
+          filename: Store.filename,
           chunks_total: chunks.length
         }
       }).then(res=>{
-        axios.get('http://192.168.1.200:5000/process_data',{
+        api.get('/process_data',{
           params: {
-            filename: randomStr + '_' +selectedFile.name,
+            filename: Store.filename,
             chunks_total: chunks.length
           }
         }).then(res=>{
+          // 后端返回标签和csv文件
+          Store.setLabels(res.data.result)
+          console.log('Store.labels',Store.labels)
           setResult(res.data.result)
-          console.log('-------------------------------------------')
-          console.log('result',result)
-          // setImage(res.data.image)
           setCsvfile(res.data.csv)
-          // console.log(res.data.csv)
         })
       }).catch(err=>{
         console.log(err)
@@ -87,23 +80,22 @@ const FileUploadForm = () => {
     }
   };
 
-
+  // 下载csv文件
   const downloadCSVFile = () => {
 
-
+    // 处理传输编码
     const decodedData = atob(csvfile);
     const utf8Data = new Uint8Array(decodedData.length);
     for (let i = 0; i < decodedData.length; i++) {
       utf8Data[i] = decodedData.charCodeAt(i);
     }
   
-
     const blob = new Blob([utf8Data], { type: 'text/csv;charset=utf-8' });
     const downloadUrl = URL.createObjectURL(blob);
 
     const link = document.createElement('a');
     link.href = downloadUrl;
-    link.download = filename+'.csv';
+    link.download = Store.filename+'.csv';
     link.click();
 
     URL.revokeObjectURL(downloadUrl);
@@ -120,17 +112,17 @@ const FileUploadForm = () => {
       
       
     </form>
-    {/* 绘制base64编码的image图片 */}
-      
-    {/* {image && <WaveformWithLabels waveformImageUrl={image} labels={result} />} */}
-    {result && <ImageGallery filename={filename} labels={result}/>}
-        {/* 播放音频文件selectedFile */}
-        {selectedFile && <div key={selectedFile}>
-        <audio ref={audioRef} controls>
-          <source src={URL.createObjectURL(selectedFile)} type={selectedFile.type}  />
-        </audio>
-        </div>}
-    {result && (<button onClick={downloadCSVFile}>下载结果文件</button>)}
+
+    {result && <ImageGallery result={result}/>}
+
+    {/* 播放音频文件selectedFile */}
+    {selectedFile && <div key={selectedFile}>
+    <audio ref={audioRef} controls>
+      <source src={URL.createObjectURL(selectedFile)} type={selectedFile.type}  />
+    </audio>
+    </div>}
+
+    {result && (<Button icon={<DownloadOutlined />} type="primary"    onClick={downloadCSVFile}>下载结果文件</Button>)}
     </div>
 
   );
