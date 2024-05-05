@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Store from '../../store';
 import api from '../../api/api';
 import ImageGallery from '../ImageGallery';
-import './index.css';
+// import './index.css';
 import { DownloadOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 
@@ -101,19 +101,20 @@ const FileUploadForm = () => {
     URL.revokeObjectURL(downloadUrl);
   };
 
+
   return (
     <div>
       <form onSubmit={handleSubmit} className='form' >
       <div>
         <input type="file" onChange={handleFileChange}  />
-        <button type="submit">上传文件</button>
+        <button type="submit" >上传文件</button>
         
       </div>
       
       
     </form>
 
-    {result && <ImageGallery result={result}/>}
+    {result && <ImageGallery />}
 
     {/* 播放音频文件selectedFile */}
     {selectedFile && <div key={selectedFile}>

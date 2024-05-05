@@ -11,7 +11,7 @@ const headerStyle = {
   color: 'red',
   // height: 64,
   // lineHeight: '64px',
-  backgroundColor: '#4096ff',
+  backgroundColor: '#efefef',
 };
 const contentStyle = {
   margin: '10px',

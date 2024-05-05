@@ -7,7 +7,7 @@ import api, {baseURL} from '../../api/api';
 
 // 该组件用于分页展示图片
 
-const ImageGallery = ({result}) => {
+const ImageGallery = () => {
   const [images, setImages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalImages, setTotalImages] = useState(0);
@@ -36,7 +36,7 @@ const ImageGallery = ({result}) => {
 
   useEffect(() => {
     fetchImages(currentPage);
-  }, [currentPage]);
+  }, [currentPage,Store.labels]);
 
   // 单独设置img标签的src
   useEffect(() => {
@@ -52,7 +52,7 @@ const ImageGallery = ({result}) => {
     <div>
       {loading ? (
         <Spin size="large" />
-      ) :  result && (
+      ) :  images && (
         <>
           {images.map((image, index) => (
 
